@@ -9,20 +9,7 @@ import java.io.IOException;
 
 public class Application {
     public static void main(String[] args) {
-        try {
-            TerminalSize terminalSize = new TerminalSize(40, 20); // tamanho do terminal
-            DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory().setInitialTerminalSize(terminalSize);
-            Terminal terminal = terminalFactory.createTerminal(); // criar terminal
-            Screen screen = new TerminalScreen(terminal); // criar window
-
-            screen.setCursorPosition(null); // we don't need a cursor
-            screen.startScreen(); // screens must be started
-            screen.doResizeIfNecessary(); // resize screen if necessary
-            screen.clear();
-            screen.setCharacter(10, 10, TextCharacter.fromCharacter('X')[0]);
-            screen.refresh();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Game game = new Game();
+        game.run();
     }
 }
