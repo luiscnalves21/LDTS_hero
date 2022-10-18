@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.security.Key;
 
 public class Game {
+    private Hero hero;
     private Screen screen;
-    private int x = 10;
-    private int y = 10;
     public Game() {
         try {
+            hero = new Hero(10, 10);
             TerminalSize terminalSize = new TerminalSize(40, 20); // tamanho do terminal
             DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory().setInitialTerminalSize(terminalSize);
             Terminal terminal = terminalFactory.createTerminal(); // criar terminal
@@ -30,7 +30,7 @@ public class Game {
     }
     private void draw() throws IOException {
         screen.clear();
-        screen.setCharacter(x, y, TextCharacter.fromCharacter('X')[0]);
+        hero.draw(screen);
         screen.refresh();
     }
     public void run() {
@@ -54,10 +54,10 @@ public class Game {
 
     private void processKey(KeyStroke key) {
         switch (key.getKeyType()) {
-            case ArrowUp -> y -= 1; // se fizer desta forma não preciso de usar break
-            case ArrowDown -> y += 1;
-            case ArrowLeft -> x -= 1;
-            case ArrowRight -> x += 1;
+            case ArrowUp -> hero.moveUp(); // se fizer desta forma não preciso de usar break
+            case ArrowDown -> hero.moveDown();
+            case ArrowLeft -> hero.moveLeft();
+            case ArrowRight -> hero.moveRight();
         }
     }
 }
