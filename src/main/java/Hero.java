@@ -2,7 +2,7 @@ import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.screen.Screen;
 
 public class Hero {
-    private Position position;
+    final Position position;
     public Hero(int x, int y) {
         position = new Position(x, y);
     }
