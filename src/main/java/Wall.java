@@ -13,4 +13,8 @@ public class Wall {
         graphics.setBackgroundColor(TextColor.Factory.fromString("#000000"));
         graphics.fillRectangle(new TerminalPosition(position.getX(), position.getY()), new TerminalSize(1, 1), ' ');
     }
+
+    public Position getPosition() {
+        return position;
+    }
 }

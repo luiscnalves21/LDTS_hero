@@ -6,6 +6,7 @@ import com.googlecode.lanterna.input.KeyStroke;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class Arena {
@@ -50,8 +51,13 @@ public class Arena {
     }
 
     public boolean canHeroMove(Position position) {
-        if (position.getX() >= 1 && position.getX() < width-1) {
-            return position.getY() >= 1 && position.getY() < height-1;
+        for (Wall wall : walls) {
+            if (wall.getPosition().equals(position)) {
+                return false;
+            }
+        }
+        if (position.getX() >= 0 && position.getX() < width) {
+            return position.getY() >= 0 && position.getY() < height;
         }
         return false;
     }
