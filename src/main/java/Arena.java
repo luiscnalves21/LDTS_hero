@@ -6,14 +6,12 @@ import com.googlecode.lanterna.input.KeyStroke;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
 
 public class Arena {
     final int width;
     final int height;
     final Hero hero;
-    private List<Wall> walls;
+    final List<Wall> walls;
     public Arena(int width, int height) {
         this.width = width;
         this.height = height;
@@ -56,10 +54,7 @@ public class Arena {
                 return false;
             }
         }
-        if (position.getX() >= 0 && position.getX() < width) {
-            return position.getY() >= 0 && position.getY() < height;
-        }
-        return false;
+        return true;
     }
 
     public void draw(TextGraphics graphics) {
