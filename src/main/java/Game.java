@@ -44,6 +44,10 @@ public class Game {
                     break;
                 }
                 processKey(key);
+                if (arena.gameOver || arena.win) {
+                    screen.close();
+                    break;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
