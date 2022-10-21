@@ -14,13 +14,4 @@ public class Coin extends Element {
         graphics.enableModifiers(SGR.BOLD);
         graphics.putString(new TerminalPosition(getPosition().getX(), getPosition().getY()), "C");
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        if (getClass() != o.getClass()) return false;
-        Coin p = (Coin) o;
-        return getPosition().getX() == p.getPosition().getX() && getPosition().getY() == p.getPosition().getY();
-    }
 }

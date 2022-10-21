@@ -3,9 +3,7 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 
-import java.util.List;
 import java.util.Random;
-import java.util.regex.PatternSyntaxException;
 
 public class Monster extends Element {
     public Monster(int x, int y) {
@@ -27,22 +25,5 @@ public class Monster extends Element {
             tempY = random.nextInt(3)-1+getPosition().getY();
         }
         return new Position(tempX, tempY);
-    }
-
-    public void moveMonsters() {
-        setPosition(move());
-    }
-
-    public void verifyMonsterCollisions() {
-
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        if (getClass() != o.getClass()) return false;
-        Monster p = (Monster) o;
-        return getPosition().getX() == p.getPosition().getX() && getPosition().getY() == p.getPosition().getY();
     }
 }

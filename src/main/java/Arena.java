@@ -1,10 +1,10 @@
+import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -16,18 +16,46 @@ public class Arena {
     private List<Monster> monsters;
     private List<Wall> walls;
     private List<Coin> coins;
-    public boolean gameOver;
     public boolean win;
+    public int getWidth() {
+        return width;
+    }
+    public int getHeight() {
+        return height;
+    }
+    private class Hero extends Element {
+        private Hero(int x, int y) {
+            super(x, y);
+        }
+
+        public void draw(TextGraphics graphics) {
+            graphics.setForegroundColor(TextColor.Factory.fromString("#ffff33"));
+            graphics.enableModifiers(SGR.BOLD);
+            graphics.putString(new TerminalPosition(getPosition().getX(), getPosition().getY()), "X");
+        }
+    }
+    public Position moveUp() {
+        return new Position(hero.getPosition().getX(), (hero.getPosition().getY()-1));
+    }
+
+    public Position moveDown() { return new Position(hero.getPosition().getX(), (hero.getPosition().getY()+1)); }
+
+    public Position moveLeft() {
+        return new Position(hero.getPosition().getX()-1, (hero.getPosition().getY()));
+    }
+
+    public Position moveRight() {
+        return new Position(hero.getPosition().getX()+1, (hero.getPosition().getY()));
+    }
+
     public Arena(int width, int height) {
         this.width = width;
         this.height = height;
+        hero = new Hero(10, 10);
         walls = createWalls();
         coins = createCoins();
         monsters = createMonsters();
-        gameOver = false;
         win = false;
-
-        hero = new Hero(10, 10);
     }
 
     private List<Wall> createWalls() {
@@ -47,18 +75,9 @@ public class Arena {
         Random random = new Random();
         coins = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            coins.add(new Coin(random.nextInt(width-2)+1, random.nextInt(height-2)+1));
-            for (int j = 0; j < coins.size()-1; j++) {
-                if (coins.get(j).equals(coins.get(i))) {
-                    coins.remove(coins.size()-1);
-                    i--;
-                    break;
-                }
-                if (coins.get(j).getPosition().getX() == 10 && coins.get(j).getPosition().getY() == 10) {
-                    coins.remove(coins.size()-1);
-                    i--;
-                    break;
-                }
+            Coin newcoin = new Coin(random.nextInt(width-2)+1, random.nextInt(height-2)+1);
+            if (!coins.contains(newcoin) && !newcoin.getPosition().equals(hero.getPosition())) {
+                coins.add(newcoin);
             }
         }
         return coins;
@@ -68,62 +87,52 @@ public class Arena {
         Random random = new Random();
         monsters = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            monsters.add(new Monster(random.nextInt(width-2)+1, random.nextInt(height-2)+1));
-            for (int j = 0; j < monsters.size()-1; j++) {
-                if (monsters.get(j).equals(monsters.get(i))) {
-                    monsters.remove(monsters.size()-1);
-                    i--;
-                    break;
-                }
-                if (monsters.get(j).getPosition().getX() == 10 && monsters.get(j).getPosition().getY() == 10) {
-                    monsters.remove(monsters.size()-1);
-                    i--;
-                    break;
-                }
+            Monster newmonster = new Monster(random.nextInt(width-2)+1, random.nextInt(height-2)+1);
+            if (!monsters.contains(newmonster) && !newmonster.getPosition().equals(hero.getPosition())) {
+                monsters.add(newmonster);
             }
         }
         return monsters;
     }
 
+    private void retrieveCoins() {
+        for (Coin coin : coins) {
+            if (coin.getPosition().equals(hero.getPosition())) {
+                coins.remove(coin);
+                break;
+            }
+        }
+    }
 
-
-    public void processKey(KeyStroke key) {
+    public void moveMonsters() {
         for (Monster monster : monsters) {
-            monster.moveMonsters();
+            monster.setPosition(monster.move());
         }
-        switch (key.getKeyType()) {
-            case ArrowUp -> moveHero(hero.moveUp()); // se fizer desta forma não preciso de usar break
-            case ArrowDown -> moveHero(hero.moveDown());
-            case ArrowLeft -> moveHero(hero.moveLeft());
-            case ArrowRight -> moveHero(hero.moveRight());
+    }
+
+    public boolean verifyMonsterCollisions() {
+        for (Monster monster : monsters) {
+            if (monster.getPosition().equals(hero.getPosition())) {
+                System.out.println("==============");
+                System.out.println("||GAME OVER!||");
+                System.out.println("==============");
+                return true;
+            }
         }
+        return false;
     }
 
     public void moveHero(Position position) {
         if (canHeroMove(position)) {
             hero.setPosition(position);
         }
+        retrieveCoins();
     }
 
     public boolean canHeroMove(Position position) {
         for (Wall wall : walls) {
             if (wall.getPosition().equals(position)) {
                 return false;
-            }
-        }
-        for (int i = 0; i < coins.size(); i++) {
-            if (coins.get(i).getPosition().equals(position)) {
-                coins.remove(coins.get(i));
-                break;
-            }
-        }
-        for (Monster monster : monsters) {
-            if (monster.getPosition().equals(hero.getPosition())) {
-                System.out.println("==============");
-                System.out.println("||GAME OVER!||");
-                System.out.println("==============");
-                gameOver = true;
-                return true;
             }
         }
         if (coins.size() == 0) {

@@ -10,10 +10,9 @@ import java.io.IOException;
 
 public class Game {
     private Screen screen;
-    private Arena arena;
+    final Arena arena;
     public Game() {
         try {
-            arena = new Arena(40, 20);
             TerminalSize terminalSize = new TerminalSize(40, 20); // tamanho do terminal
             DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory().setInitialTerminalSize(terminalSize);
             Terminal terminal = terminalFactory.createTerminal(); // criar terminal
@@ -25,6 +24,7 @@ public class Game {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        arena = new Arena(40, 20);
     }
     private void draw() throws IOException {
         screen.clear();
@@ -36,15 +36,23 @@ public class Game {
             try {
                 draw();
                 KeyStroke key = screen.readInput();
-                if (key.getKeyType() == KeyType.Character && key.getCharacter() == 'q') {
+                processKey(key);
+                if (arena.verifyMonsterCollisions()) {
                     screen.close();
                     break;
+                }
+                if (key.getKeyType() == KeyType.Character && key.getCharacter() == 'q') {
+                    screen.close();
                 }
                 else if (key.getKeyType() == KeyType.EOF) { // se fechar a janela
                     break;
                 }
-                processKey(key);
-                if (arena.gameOver || arena.win) {
+                if (arena.win) {
+                    screen.close();
+                    break;
+                }
+                arena.moveMonsters();
+                if (arena.verifyMonsterCollisions()) {
                     screen.close();
                     break;
                 }
@@ -55,6 +63,11 @@ public class Game {
     }
 
     private void processKey(KeyStroke key) {
-        arena.processKey(key);
+        switch (key.getKeyType()) {
+            case ArrowUp -> arena.moveHero(arena.moveUp()); // se fizer desta forma não preciso de usar break
+            case ArrowDown -> arena.moveHero(arena.moveDown());
+            case ArrowLeft -> arena.moveHero(arena.moveLeft());
+            case ArrowRight -> arena.moveHero(arena.moveRight());
+        }
     }
 }
