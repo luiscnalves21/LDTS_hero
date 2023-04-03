@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClass.set("Application")
+    mainClass.set('Application')
 }
 
 group 'org.example'
